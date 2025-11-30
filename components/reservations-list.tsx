@@ -26,16 +26,21 @@ export function ReservationsList({ refreshTrigger }: ReservationsListProps) {
       const supabase = createClient()
 
       // Consultar reservas ordenadas por fecha
-      const { data, error } = await supabase
+      const { data: fetchData, error } = await supabase
         .from("reservations")
         .select("*")
         .order("date", { ascending: true })
         .order("time", { ascending: true })
 
+      // Log para debugging en despliegue
+      // eslint-disable-next-line no-console
+      console.log("Supabase fetch reservations:", { fetchData, error })
+
       if (error) {
+        // eslint-disable-next-line no-console
         console.error("Error fetching reservations:", error)
       } else {
-        setReservations(data || [])
+        setReservations(fetchData || [])
       }
       setIsLoading(false)
     }

@@ -54,8 +54,16 @@ export function ReservationForm({ onSuccess }: ReservationFormProps) {
       // Crear cliente de Supabase
       const supabase = createClient()
 
+      // Comprobación rápida: indicar si las env vars públicas están presentes (no imprimir las claves)
+      // útil para debugging en producción sin exponer valores
+      // eslint-disable-next-line no-console
+      console.log("SUPABASE_ENV_PRESENT", {
+        url: Boolean(process.env.NEXT_PUBLIC_SUPABASE_URL),
+        anonKey: Boolean(process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY),
+      })
+
       // Insertar la reserva en la base de datos
-      const { error } = await supabase.from("reservations").insert({
+      const { data: insertData, error } = await supabase.from("reservations").insert({
         name: data.name,
         email: data.email,
         phone: data.phone,
@@ -64,6 +72,10 @@ export function ReservationForm({ onSuccess }: ReservationFormProps) {
         guests: data.guests,
         notes: data.notes || null,
       })
+
+      // Log completo del resultado para debugging
+      // eslint-disable-next-line no-console
+      console.log("Supabase insert result:", { insertData, error })
 
       if (error) {
         throw error
@@ -77,12 +89,16 @@ export function ReservationForm({ onSuccess }: ReservationFormProps) {
       reset()
       onSuccess?.()
     } catch (error) {
-      // Error: mostrar mensaje
+      // Error: mostrar mensaje y loguearlo
+      // eslint-disable-next-line no-console
+      console.error("Error al insertar reserva:", error)
       setSubmitMessage({
         type: "error",
-        text: "Error al crear la reserva. Por favor intenta de nuevo.",
+        text:
+          error && typeof error === "object" && "message" in error
+            ? (error as any).message
+            : "Error al crear la reserva. Por favor intenta de nuevo.",
       })
-      console.error("Error:", error)
     } finally {
       setIsSubmitting(false)
     }
