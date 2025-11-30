@@ -1,0 +1,28 @@
+// ============================================
+// CLIENTE DE SUPABASE (lado del servidor)
+// Usa este archivo para Server Components y Server Actions
+// ============================================
+
+import { createServerClient } from "@supabase/ssr"
+import { cookies } from "next/headers"
+
+// Función para crear el cliente de Supabase en el servidor
+// IMPORTANTE: Siempre crear una nueva instancia, no usar variables globales
+export async function createClient() {
+  const cookieStore = await cookies()
+
+  return createServerClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!, {
+    cookies: {
+      getAll() {
+        return cookieStore.getAll()
+      },
+      setAll(cookiesToSet) {
+        try {
+          cookiesToSet.forEach(({ name, value, options }) => cookieStore.set(name, value, options))
+        } catch {
+          // Ignorar errores en Server Components
+        }
+      },
+    },
+  })
+}
