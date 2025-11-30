@@ -41,7 +41,7 @@ export default function HomePage() {
 
       {/* Footer simple */}
       <footer className="border-t bg-stone-100 py-8 text-center text-sm text-stone-600">
-        <p>&copy; 2025 La Casa del Sabor. douglasrujana.dev Todos los derechos reservados.</p>
+        <p>&copy; 2025 La Casa del Sabor. <b>douglasrujana.dev</b> Todos los derechos reservados.</p>
       </footer>
     </div>
   )
